@@ -19,7 +19,7 @@ export const AddBlog = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [productName, setProductName] = useState("");
   const [productTitle, setProductTitle] = useState("");
-  const [category, setCategory] = useState("general"); // ✅ new
+  const [category, setCategory] = useState("general"); 
   const [details, setDetails] = useState([{ name: "", value: "" }]);
   const [snackOpen, setSnackOpen] = useState(false);
 
@@ -48,7 +48,7 @@ export const AddBlog = () => {
         productName,
         productTitle,
         category,  
-        details,
+        details,            
       });
       console.log(res);
 

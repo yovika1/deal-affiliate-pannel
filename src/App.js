@@ -5,7 +5,7 @@ import { Auth } from './routes/Routes';
 
 const App = () => {
   return (
-      <Box sx={{bgcolor:'rgba(87, 52, 225, 0.87)'}}>
+      <Box sx={{bgcolor:'rgba(168, 146, 255, 0.41)'}}>
         <Auth/>
    
       </Box>

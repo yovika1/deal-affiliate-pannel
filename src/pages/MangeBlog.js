@@ -24,6 +24,7 @@ export const ManageBlogs = () => {
     const res = await axios.get(`${API_BASE}/getBlogs`);
     setProducts(res.data)
   };
+console.log("Products state:", products);
 
   useEffect(() => {
     fetchProducts();
@@ -57,7 +58,7 @@ export const ManageBlogs = () => {
       </Typography>
 
       <List>
-        {products.map((product) => (
+        {products?.map((product) => (
           <ListItem
             key={product._id}
             secondaryAction={

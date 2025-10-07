@@ -22,6 +22,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { OffersTable } from "../components/Coupens";
 import API_BASE from "../config";
+import { AdminTestimonials } from "./Testimonal";
 
 export const Dashboard = () => {
   const [blogs, setBlogs] = useState([]);
@@ -41,6 +42,9 @@ export const Dashboard = () => {
           axios.get(`${API_BASE}/getoffers`),
           axios.get(`${API_BASE}/getfeedback`), 
         ]);
+console.log("Blogs API Response:", blogRes.data);
+      console.log("Feedback API Response:", feedbackRes.data);
+
 
         setBlogs(blogRes?.data || []);
         setCoupons(couponRes?.data || []);
@@ -135,25 +139,26 @@ export const Dashboard = () => {
                 </Button>
               }
             />
-            <CardContent>
-              <List>
-                {blogs.slice(0, 5).map((blog) => (
-                  <React.Fragment key={blog._id}>
-                    <ListItem>
-                      <ListItemText
-                        primary={blog.title || "Untitled"}
-                        secondary={
-                          blog.content
-                            ? blog.content.slice(0, 50) + "..."
-                            : "No content available"
-                        }
-                      />
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                ))}
-              </List>
-            </CardContent>
+           <CardContent>
+  <List>
+    {Array.isArray(blogs) && blogs.slice(0, 5).map((blog) => (
+      <React.Fragment key={blog._id}>
+        <ListItem>
+          <ListItemText
+            primary={blog.title || "Untitled"}
+            secondary={
+              blog.content
+                ? blog.content.slice(0, 50) + "..."
+                : "No content available"
+            }
+          />
+        </ListItem>
+        <Divider />
+      </React.Fragment>
+    ))}
+  </List>
+</CardContent>
+
           </Card>
         </Grid>
 
@@ -217,6 +222,8 @@ export const Dashboard = () => {
           </Card>
         </Grid>
       </Grid>
+      <AdminTestimonials/>
+
     </Container>
   );
 };

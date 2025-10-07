@@ -39,7 +39,8 @@ export const SkincareGuideEditor = () => {
         setAlert({ open: true, message: "Guide updated successfully!", severity: "success" });
         setEditing(null);
       } else {
-        await axios.post(CREATE_GUIDE, data);
+        await axios.post(
+          CREATE_GUIDE, data);
         setAlert({ open: true, message: "Guide added successfully!", severity: "success" });
       }
       setOpenDialog(false);
