@@ -42,13 +42,12 @@ export const OffersTable = () => {
 
       <Button
         variant="contained"
-        onClick={() => setSelected({})} // open empty form for Add
+        onClick={() => setSelected({})} 
         sx={{ mb: 2 }}
       >
         Add Offer
       </Button>
 
-      {/* Offer Form (Dialog) */}
       {selected && (
         <OfferForm
           offer={selected}

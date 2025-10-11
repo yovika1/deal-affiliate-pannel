@@ -28,7 +28,6 @@ export const FeedbackDashboard = () => {
     }
   };
 
-  // Open reply dialog
   const handleOpenReply = (feedback) => {
     setCurrentFeedback(feedback);
     setReplyMessage(feedback.adminReply || "");

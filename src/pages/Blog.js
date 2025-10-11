@@ -15,7 +15,7 @@ import API_BASE from "../config";
 
 
 export const AddBlog = () => {
-  const [productUrl, setProductUrl] = useState("");
+  const [affiliateUrl, setaffiliateUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [productName, setProductName] = useState("");
   const [productTitle, setProductTitle] = useState("");
@@ -43,7 +43,7 @@ export const AddBlog = () => {
 
     try {
       const res = await axios.post(`${API_BASE}/create`, {
-        productUrl,
+        affiliateUrl,
         imageUrl,
         productName,
         productTitle,
@@ -53,7 +53,7 @@ export const AddBlog = () => {
       console.log(res);
 
       // Reset form
-      setProductUrl("");
+      setaffiliateUrl("");
       setImageUrl("");
       setProductName("");
       setProductTitle("");
@@ -77,8 +77,8 @@ export const AddBlog = () => {
           label="Product URL"
           fullWidth
           margin="normal"
-          value={productUrl}
-          onChange={(e) => setProductUrl(e.target.value)}
+          value={affiliateUrl}
+          onChange={(e) => setaffiliateUrl(e.target.value)}
         />
 
         <TextField

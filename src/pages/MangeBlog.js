@@ -22,7 +22,7 @@ export const ManageBlogs = () => {
 
   const fetchProducts = async () => {
     const res = await axios.get(`${API_BASE}/getBlogs`);
-    setProducts(res.data)
+    setProducts(res.data.blogs )
   };
 console.log("Products state:", products);
 
@@ -95,7 +95,6 @@ console.log("Products state:", products);
         ))}
       </List>
 
-      {/* Dialog is separated */}
       <EditProductDialog
         open={open}
         onClose={() => setOpen(false)}
