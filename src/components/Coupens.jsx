@@ -18,7 +18,7 @@ import API_BASE from "../config";
 
 export const OffersTable = () => {
   const [offers, setOffers] = useState([]);
-  const [selected, setSelected] = useState(null); // for edit
+  const [selected, setSelected] = useState(null); 
 
   const fetchOffers = async () => {
     const res = await axios.get(`${API_BASE}/getoffers`);

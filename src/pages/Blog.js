@@ -9,6 +9,7 @@ import {
   IconButton,
   Snackbar,
   MenuItem,
+  
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import API_BASE from "../config";
@@ -48,11 +49,11 @@ export const AddBlog = () => {
         productName,
         productTitle,
         category,  
-        details,            
+        details, 
       });
       console.log(res);
 
-      // Reset form
+     
       setaffiliateUrl("");
       setImageUrl("");
       setProductName("");
@@ -118,7 +119,7 @@ export const AddBlog = () => {
           <MenuItem value="beauty">Beauty</MenuItem>
           <MenuItem value="general">General</MenuItem>
         </TextField>
-
+    
         <Typography variant="h6" sx={{ mt: 2 }}>
           Product Details
         </Typography>
