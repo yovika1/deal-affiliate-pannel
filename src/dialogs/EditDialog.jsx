@@ -45,55 +45,65 @@ export const EditProductDialog = ({
     });
   };
 
+    const handleProductFieldChange = (field, value) => {
+    setProduct((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        product: { ...prev.product, [field]: value },
+      };
+    });
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>Edit Product</DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"
-          label="Product Name"
-          fullWidth
-          value={product?.productName || ""}
-          onChange={(e) =>
-            setProduct((prev) =>
-              prev ? { ...prev, productName: e.target.value } : null
-            )
-          }
-        />
-        <TextField
-          margin="dense"
           label="Product Title"
           fullWidth
-          value={product?.productTitle || ""}
-          onChange={(e) =>
+          value={product?.productTitle  || ""}
+  onChange={(e) =>
             setProduct((prev) =>
               prev ? { ...prev, productTitle: e.target.value } : null
             )
           }
         />
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="subtitle1">Product Info</Typography>
+
+        <TextField
+          margin="dense"
+          label="Product Name"
+          fullWidth
+          value={product?.product?.productTitle || ""}
+          onChange={(e) => handleProductFieldChange("productName", e.target.value)}
+
+        />
         <TextField
           margin="dense"
           label="Product URL"
           fullWidth
-          value={product?.productUrl || ""}
-          onChange={(e) =>
-            setProduct((prev) =>
-              prev ? { ...prev, productUrl: e.target.value } : null
-            )
-          }
+          value={product?.product?.productUrl || ""}
+          onChange={(e) => handleProductFieldChange("productUrl", e.target.value)}
         />
         <TextField
           margin="dense"
           label="Image URL"
           fullWidth
-          value={product?.imageUrl || ""}
-          onChange={(e) =>
-            setProduct((prev) =>
-              prev ? { ...prev, imageUrl: e.target.value } : null
-            )
-          }
-        />
+          value={product?.product?.imageUrl || ""}
+           onChange={(e) => handleProductFieldChange("imageUrl", e.target.value)}
 
+        />
+     <TextField
+          margin="dense"
+          label="Auto Price (Read Only)"
+          fullWidth
+          value={product?.product?.currentPrice || "Fetching automatically"}
+          InputProps={{ readOnly: true }}
+        />
+        
         <Divider sx={{ my: 2 }} />
         <Typography variant="subtitle1">Details</Typography>
         {product?.details?.map((detail, index) => (

@@ -22,9 +22,8 @@ export const ManageBlogs = () => {
 
   const fetchProducts = async () => {
     const res = await axios.get(`${API_BASE}/getBlogs`);
-    setProducts(res.data.blogs )
+    setProducts(res.data.blogs);
   };
-console.log("Products state:", products);
 
   useEffect(() => {
     fetchProducts();
@@ -58,15 +57,15 @@ console.log("Products state:", products);
       </Typography>
 
       <List>
-        {products?.map((product) => (
+        {products?.map((blog) => (
           <ListItem
-            key={product._id}
+            key={blog._id}
             secondaryAction={
               <>
-                <IconButton onClick={() => handleEdit(product)}>
+                <IconButton onClick={() => handleEdit(blog)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton onClick={() => handleDelete(product._id)}>
+                <IconButton onClick={() => handleDelete(blog._id)}>
                   <DeleteIcon />
                 </IconButton>
               </>
@@ -74,20 +73,39 @@ console.log("Products state:", products);
           >
             <ListItemAvatar>
               <Avatar
-                src={product.imageUrl}
-                alt={product.productName}
+                src={blog.product?.imageUrl}
+                alt={blog.product?.productName}
                 variant="square"
                 sx={{ width: 60, height: 60, mr: 2 }}
               />
             </ListItemAvatar>
             <ListItemText
-              primary={product.productName}
+              primary={blog.product?.productName || blog.productTitle || "Unnamed"}
               secondary={
                 <>
-                  {product.productTitle}
+                  {blog.product?.currentPrice && (
+                    <Typography
+                      component="span"
+                      sx={{
+                        color: "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      💰 {blog.product.currentPrice}
+                    </Typography>
+                  )}
                   <br />
-                  {product.details &&
-                    product.details.map((d) => `${d.name}: ${d.value}`).join(", ")}
+                  {blog.product?.originalPrice && (
+                    <Typography
+                      component="span"
+                      sx={{ color: "red", textDecoration: "line-through" }}
+                    >
+                      {blog.product.originalPrice}
+                    </Typography>
+                  )}
+                  <br />
+                  {blog.details &&
+                    blog.details.map((d) => `${d.name}: ${d.value}`).join(", ")}
                 </>
               }
             />

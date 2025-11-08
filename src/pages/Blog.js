@@ -9,6 +9,7 @@ import {
   IconButton,
   Snackbar,
   MenuItem,
+  CircularProgress,
   
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
@@ -17,12 +18,17 @@ import API_BASE from "../config";
 
 export const AddBlog = () => {
   const [affiliateUrl, setaffiliateUrl] = useState("");
+  const [productUrl, setproductUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [productName, setProductName] = useState("");
   const [productTitle, setProductTitle] = useState("");
   const [category, setCategory] = useState("general"); 
+  const [currentPrice, setCurrentPrice] = useState("");
+  const [originalPrice, setOriginalPrice] = useState("");
   const [details, setDetails] = useState([{ name: "", value: "" }]);
   const [snackOpen, setSnackOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
 
   const handleAddDetail = () => {
     setDetails([...details, { name: "", value: "" }]);
@@ -39,31 +45,61 @@ export const AddBlog = () => {
     setDetails(newDetails);
   };
 
+  const handleAutoFetch = async () => {
+    if (!productUrl) return alert("Enter a product URL first!");
+    setFetching(true);
+    try {
+      const { data } = await axios.post(`${API_BASE}/fetch-product`, { url: productUrl });
+
+      setProductName(data.productName || "");
+      setImageUrl(data.imageUrl || "");
+      setCurrentPrice(data.currentPrice || "");
+      setOriginalPrice(data.originalPrice || "");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
 
     try {
-      const res = await axios.post(`${API_BASE}/create`, {
-        affiliateUrl,
-        imageUrl,
-        productName,
+      const payload = {
         productTitle,
         category,  
-        details, 
-      });
-      console.log(res);
+         affiliateUrl,
+          productUrl,
+          details, 
+        product: {
+          affiliateUrl,
+          productUrl,
+          productName,
+          imageUrl,
+          currentPrice,
+          originalPrice,
+        },
+      };
+      await axios.post(`${API_BASE}/create`, payload);
 
      
       setaffiliateUrl("");
+      setproductUrl("");
       setImageUrl("");
       setProductName("");
       setProductTitle("");
+      setCurrentPrice("");
+      setOriginalPrice("");
       setCategory("general");
       setDetails([{ name: "", value: "" }]);
       setSnackOpen(true);
     } catch (err) {
-      console.error("Error creating product:", err);
       alert("Failed to add product");
+    }  finally {
+      setLoading(false);
     }
   };
 
@@ -75,7 +111,18 @@ export const AddBlog = () => {
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
         <TextField
-          label="Product URL"
+          label="Product Page URL"
+          fullWidth
+          margin="normal"
+          value={productUrl}
+          onChange={(e) => setproductUrl(e.target.value)}
+           onBlur={handleAutoFetch} 
+          helperText={fetching ? "Fetching product details..." : ""}
+
+        />
+
+        <TextField
+          label="Affiliate URL"
           fullWidth
           margin="normal"
           value={affiliateUrl}
@@ -88,7 +135,7 @@ export const AddBlog = () => {
           margin="normal"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-        />
+        /> 
 
         <TextField
           label="Product Name"
@@ -96,6 +143,22 @@ export const AddBlog = () => {
           margin="normal"
           value={productName}
           onChange={(e) => setProductName(e.target.value)}
+        />
+  
+        <TextField
+          label="Current Price"
+          fullWidth
+          margin="normal"
+          value={currentPrice}
+          onChange={(e) => setCurrentPrice(e.target.value)}
+        />
+
+        <TextField
+          label="Original Price"
+          fullWidth
+          margin="normal"
+          value={originalPrice}
+          onChange={(e) => setOriginalPrice(e.target.value)}
         />
 
         <TextField
@@ -158,8 +221,11 @@ export const AddBlog = () => {
         </Button>
 
         <Box sx={{ mt: 3 }}>
-          <Button variant="contained" color="primary" type="submit">
-            ADD
+          <Button variant="contained" color="primary" type="submit"
+            disabled={loading}
+            startIcon={loading && <CircularProgress size={20} />}
+            >
+            {loading ? "Adding..." : "Add Blog"}
           </Button>
         </Box>
       </Box>
