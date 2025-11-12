@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Typography, Button, Snackbar, Alert, Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -17,7 +17,7 @@ export const SkincareGuideEditor = () => {
   const UPDATE_GUIDE = (id) => `${BASE_URL}/updateGuide/${id}`;
   const DELETE_GUIDE = (id) => `${BASE_URL}/deleteguidance/${id}`;
 
-  const loadGuidances = async () => {
+  const loadGuidances = useCallback(async () => {
     try {
       const res = await axios.get(GET_GUIDES);
       setGuidances(res.data);
@@ -25,11 +25,11 @@ export const SkincareGuideEditor = () => {
       console.error(error);
       setAlert({ open: true, message: "Failed to fetch guides", severity: "error" });
     }
-  };
+}, [GET_GUIDES]);
 
   useEffect(() => {
     loadGuidances();
-  }, []);
+  }, [loadGuidances]);
 
   const handleSave = async (data) => {
     try {
