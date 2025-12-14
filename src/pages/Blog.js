@@ -52,7 +52,9 @@ export const AddBlog = () => {
       const { data } = await axios.post(`${API_BASE}/fetch-product`, { url: productUrl });
 
       setProductName(data.productName || "");
-      setImageUrl(data.imageUrl || "");
+      // setImageUrl(data.imageUrl || "");
+      setImageUrl(Array.isArray(data.imageUrl) ? data.imageUrl[0] : data.imageUrl);
+
       setCurrentPrice(data.currentPrice || "");
       setOriginalPrice(data.originalPrice || "");
     } catch (err) {
@@ -74,6 +76,7 @@ export const AddBlog = () => {
          affiliateUrl,
           productUrl,
           details, 
+          
         product: {
           affiliateUrl,
           productUrl,
