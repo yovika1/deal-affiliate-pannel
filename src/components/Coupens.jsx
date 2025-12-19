@@ -62,6 +62,7 @@ export const OffersTable = () => {
         <TableHead>
           <TableRow>
             <TableCell>Title</TableCell>
+            <TableCell>Coupens</TableCell>
             <TableCell>Discount</TableCell>
             <TableCell>Category</TableCell>
             <TableCell>Expiry</TableCell>
@@ -73,6 +74,7 @@ export const OffersTable = () => {
           {offers.map((offer) => (
             <TableRow key={offer._id}>
               <TableCell>{offer.productTitle}</TableCell>
+              <TableCell>{offer.code}</TableCell>
               <TableCell>{offer.discount}</TableCell>
               <TableCell>{offer.category}</TableCell>
               <TableCell>
