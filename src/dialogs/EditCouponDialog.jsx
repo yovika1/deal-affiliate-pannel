@@ -59,14 +59,14 @@ export const OfferForm = ({ offer, onClose }) => {
           fullWidth
           sx={{ mb: 2 }}
         />
-        <TextField
+        {/* <TextField
           label="Description"
           name="details"
           value={form.details || ""}
           onChange={handleChange}
           fullWidth
           sx={{ mb: 2 }}
-        />
+        /> */}
         <TextField
           label="Image URL"
           name="imageUrl"
