@@ -96,7 +96,7 @@ export const SkincareGuideEditor = () => {
       ),
   },
   {
-    field: "buttonText",   // ✅ New column for button text
+    field: "buttonText",   
     headerName: "Button Text",
     width: 150,
   },

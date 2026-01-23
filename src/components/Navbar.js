@@ -46,7 +46,7 @@ export const Navbar = () => {
               <ListItemIcon sx={{ color: "white" }}>
                 <PostAddIcon />
               </ListItemIcon>
-              <ListItemText primary="Manage Coupens" />
+              <ListItemText primary="Guidance pannel" />
             </ListItem>
 
             <ListItem

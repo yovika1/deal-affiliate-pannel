@@ -88,7 +88,7 @@ export const OfferForm = ({ offer, onClose }) => {
           name="code"
           value={form.code || ""}
           onChange={handleChange}
-          fullWidth
+          fullWidthv
           sx={{ mb: 2 }}
         />
         <TextField
