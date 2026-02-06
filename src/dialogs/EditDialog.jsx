@@ -9,6 +9,7 @@ import {
   Box,
   Divider,
   IconButton,
+  MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -32,7 +33,7 @@ export const EditProductDialog = ({
     setProduct((prev) =>
       prev
         ? { ...prev, details: [...prev.details, { name: "", value: "" }] }
-        : prev
+        : prev,
     );
   };
 
@@ -45,7 +46,7 @@ export const EditProductDialog = ({
     });
   };
 
-    const handleProductFieldChange = (field, value) => {
+  const handleProductFieldChange = (field, value) => {
     setProduct((prev) => {
       if (!prev) return prev;
       return {
@@ -63,10 +64,10 @@ export const EditProductDialog = ({
           margin="dense"
           label="Product Title"
           fullWidth
-          value={product?.productTitle  || ""}
-  onChange={(e) =>
+          value={product?.productTitle || ""}
+          onChange={(e) =>
             setProduct((prev) =>
-              prev ? { ...prev, productTitle: e.target.value } : null
+              prev ? { ...prev, productTitle: e.target.value } : null,
             )
           }
         />
@@ -74,36 +75,56 @@ export const EditProductDialog = ({
         <Typography variant="subtitle1">Product Info</Typography>
 
         <TextField
+          select
+          label="Special Day (Optional)"
+          fullWidth
+          margin="normal"
+          value={product?.specialDay || ""}
+          onChange={(e) =>
+            setProduct((prev) =>
+              prev ? { ...prev, specialDay: e.target.value } : prev,
+            )
+          }
+        >
+          <MenuItem value="">None</MenuItem>
+          <MenuItem value="valentines">Valentine’s Day ❤️</MenuItem>
+          <MenuItem value="diwali">Diwali 🪔</MenuItem>
+          <MenuItem value="rakhi">Rakhi 🎁</MenuItem>
+        </TextField>
+
+        <TextField
           margin="dense"
           label="Product Name"
           fullWidth
-          value={product?.product?.productTitle || ""}
-          onChange={(e) => handleProductFieldChange("productName", e.target.value)}
-
+          value={product?.product?.productName || ""}
+          onChange={(e) =>
+            handleProductFieldChange("productName", e.target.value)
+          }
         />
         <TextField
           margin="dense"
           label="Product URL"
           fullWidth
           value={product?.product?.productUrl || ""}
-          onChange={(e) => handleProductFieldChange("productUrl", e.target.value)}
+          onChange={(e) =>
+            handleProductFieldChange("productUrl", e.target.value)
+          }
         />
         <TextField
           margin="dense"
           label="Image URL"
           fullWidth
           value={product?.product?.imageUrl || ""}
-           onChange={(e) => handleProductFieldChange("imageUrl", e.target.value)}
-
+          onChange={(e) => handleProductFieldChange("imageUrl", e.target.value)}
         />
-     <TextField
+        <TextField
           margin="dense"
           label="Auto Price (Read Only)"
           fullWidth
           value={product?.product?.currentPrice || "Fetching automatically"}
           InputProps={{ readOnly: true }}
         />
-        
+
         <Divider sx={{ my: 2 }} />
         <Typography variant="subtitle1">Details</Typography>
         {product?.details?.map((detail, index) => (

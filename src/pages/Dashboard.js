@@ -42,7 +42,7 @@ export const Dashboard = () => {
           axios.get(`${API_BASE}/getoffers`),
           axios.get(`${API_BASE}/getfeedback`), 
         ]);
-console.log("Blogs API Response:", blogRes.data);
+      console.log("Blogs API Response:", blogRes.data);
       console.log("Feedback API Response:", feedbackRes.data);
 
 

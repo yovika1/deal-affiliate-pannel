@@ -17,6 +17,8 @@ import API_BASE from "../config";
 
 
 export const AddBlog = () => {
+
+  const [specialDay, setSpecialDay] = useState("");
   const [affiliateUrl, setaffiliateUrl] = useState("");
   const [productUrl, setproductUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -71,6 +73,7 @@ export const AddBlog = () => {
 
     try {
       const payload = {
+        specialDay,
         productTitle,
         category,  
          affiliateUrl,
@@ -88,7 +91,7 @@ export const AddBlog = () => {
       };
       await axios.post(`${API_BASE}/create`, payload);
 
-     
+      setSpecialDay("");
       setaffiliateUrl("");
       setproductUrl("");
       setImageUrl("");
@@ -113,6 +116,21 @@ export const AddBlog = () => {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+        <TextField
+  select
+  label="Special Day (Optional)"
+  fullWidth
+  margin="normal"
+  value={specialDay}
+  onChange={(e) => setSpecialDay(e.target.value)}
+>
+  <MenuItem value="">None</MenuItem>
+  <MenuItem value="valentines">Valentine’s Day ❤️</MenuItem>
+  <MenuItem value="diwali">Diwali 🪔</MenuItem>
+  <MenuItem value="rakhi">Rakhi 🎁</MenuItem>
+</TextField>
+
+
         <TextField
           label="Product Page URL"
           fullWidth
