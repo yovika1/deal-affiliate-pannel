@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Container,
@@ -10,27 +10,29 @@ import {
   Snackbar,
   MenuItem,
   CircularProgress,
-  
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import API_BASE from "../config";
-
+import { useProductAutoFetch } from "../hooks/useProductAutoFetch";
 
 export const AddBlog = () => {
-
-  const [specialDay, setSpecialDay] = useState("");
   const [affiliateUrl, setaffiliateUrl] = useState("");
   const [productUrl, setproductUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [productName, setProductName] = useState("");
   const [productTitle, setProductTitle] = useState("");
-  const [category, setCategory] = useState("general"); 
+  const [category, setCategory] = useState("general");
+  const [subCategory, setSubCategory] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
   const [originalPrice, setOriginalPrice] = useState("");
+  const [badge, setBadge] = useState("Trending");
+  const [rating, setRating] = useState("");
+  const [reviewsCount, setReviewsCount] = useState("");
+  const [discountPercent, setDiscountPercent] = useState("");
   const [details, setDetails] = useState([{ name: "", value: "" }]);
   const [snackOpen, setSnackOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(false);
+  const { fetchProductDetails, fetching } = useProductAutoFetch();
 
   const handleAddDetail = () => {
     setDetails([...details, { name: "", value: "" }]);
@@ -48,50 +50,65 @@ export const AddBlog = () => {
   };
 
   const handleAutoFetch = async () => {
-    if (!productUrl) return alert("Enter a product URL first!");
-    setFetching(true);
-    try {
-      const { data } = await axios.post(`${API_BASE}/fetch-product`, { url: productUrl });
+    const data = await fetchProductDetails(productUrl);
 
-      setProductName(data.productName || "");
-      // setImageUrl(data.imageUrl || "");
-      setImageUrl(Array.isArray(data.imageUrl) ? data.imageUrl[0] : data.imageUrl);
+    if (!data) return;
 
-      setCurrentPrice(data.currentPrice || "");
-      setOriginalPrice(data.originalPrice || "");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setFetching(false);
-    }
+    setProductName(data.productName);
+    setImageUrl(data.imageUrl);
+    setCurrentPrice(data.currentPrice);
+    setOriginalPrice(data.originalPrice);
+    setRating(data.rating);
+    setReviewsCount(data.reviewsCount);
+    setDiscountPercent(data.discountPercent);
   };
+
+  const categoryMap = {
+    fashion: ["dresses", "jeans", "mens-collection"],
+    beauty: ["makeup", "skincare"],
+    general: ["trending","bestSeller","newArrival"],
+  };
+
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    setCategory(selectedCategory);
+    setSubCategory(""); 
+  };
+  useEffect(() => {
+    if (currentPrice && originalPrice) {
+      const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
+      setDiscountPercent(Math.round(discount));
+    }
+  }, [currentPrice, originalPrice]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-
     try {
       const payload = {
-        specialDay,
         productTitle,
-        category,  
-         affiliateUrl,
-          productUrl,
-          details, 
-          
+        category,
+        subCategory,
+        affiliateUrl,
+        productUrl,
+        badge,
+        details,
+
         product: {
           affiliateUrl,
           productUrl,
           productName,
           imageUrl,
-          currentPrice,
-          originalPrice,
+          currentPrice: Number(currentPrice),
+          originalPrice: Number(originalPrice),
+          rating: Number(rating),
+          reviewsCount: Number(reviewsCount),
+          discountPercent: Number(discountPercent),
         },
       };
       await axios.post(`${API_BASE}/create`, payload);
 
-      setSpecialDay("");
       setaffiliateUrl("");
       setproductUrl("");
       setImageUrl("");
@@ -99,12 +116,17 @@ export const AddBlog = () => {
       setProductTitle("");
       setCurrentPrice("");
       setOriginalPrice("");
+      setBadge("Trending");
+      setRating("");
+      setReviewsCount("");
+      setDiscountPercent("");
       setCategory("general");
+      setSubCategory("");
       setDetails([{ name: "", value: "" }]);
       setSnackOpen(true);
     } catch (err) {
       alert("Failed to add product");
-    }  finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -117,19 +139,17 @@ export const AddBlog = () => {
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
         <TextField
-  select
-  label="Special Day (Optional)"
-  fullWidth
-  margin="normal"
-  value={specialDay}
-  onChange={(e) => setSpecialDay(e.target.value)}
->
-  <MenuItem value="">None</MenuItem>
-  <MenuItem value="valentines">Valentine’s Day ❤️</MenuItem>
-  <MenuItem value="diwali">Diwali 🪔</MenuItem>
-  <MenuItem value="rakhi">Rakhi 🎁</MenuItem>
-</TextField>
-
+          select
+          label="Badge"
+          fullWidth
+          margin="normal"
+          value={badge}
+          onChange={(e) => setBadge(e.target.value)}
+        >
+          <MenuItem value="Trending">Trending</MenuItem>
+          <MenuItem value="Best Seller">Best Seller</MenuItem>
+          <MenuItem value="New Arrival">New Arrival</MenuItem>
+        </TextField>
 
         <TextField
           label="Product Page URL"
@@ -137,9 +157,8 @@ export const AddBlog = () => {
           margin="normal"
           value={productUrl}
           onChange={(e) => setproductUrl(e.target.value)}
-           onBlur={handleAutoFetch} 
-          helperText={fetching ? "Fetching product details..." : ""}
-
+          // onBlur={handleAutoFetch}
+          // helperText={fetching ? "Fetching product details..." : ""}
         />
 
         <TextField
@@ -156,7 +175,7 @@ export const AddBlog = () => {
           margin="normal"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-        /> 
+        />
 
         <TextField
           label="Product Name"
@@ -165,10 +184,38 @@ export const AddBlog = () => {
           value={productName}
           onChange={(e) => setProductName(e.target.value)}
         />
-  
+        <TextField
+          label="Rating (e.g. 4.5)"
+          type="number"
+          fullWidth
+          margin="normal"
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+        />
+
+        <TextField
+          label="Reviews Count"
+          type="number"
+          fullWidth
+          inputProps={{ min: 0, max: 5, step: 0.1 }}
+          margin="normal"
+          value={reviewsCount}
+          onChange={(e) => setReviewsCount(e.target.value)}
+        />
+
+        <TextField
+          label="Discount %"
+          type="number"
+          fullWidth
+          margin="normal"
+          value={discountPercent}
+          onChange={(e) => setDiscountPercent(e.target.value)}
+        />
+
         <TextField
           label="Current Price"
           fullWidth
+          type="number"
           margin="normal"
           value={currentPrice}
           onChange={(e) => setCurrentPrice(e.target.value)}
@@ -177,6 +224,7 @@ export const AddBlog = () => {
         <TextField
           label="Original Price"
           fullWidth
+          type="number"
           margin="normal"
           value={originalPrice}
           onChange={(e) => setOriginalPrice(e.target.value)}
@@ -197,13 +245,29 @@ export const AddBlog = () => {
           fullWidth
           margin="normal"
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={handleCategoryChange}
         >
           <MenuItem value="fashion">Fashion</MenuItem>
           <MenuItem value="beauty">Beauty</MenuItem>
           <MenuItem value="general">General</MenuItem>
         </TextField>
-    
+
+        <TextField
+          select
+          label="Sub Category"
+          fullWidth
+          margin="normal"
+          value={subCategory}
+          onChange={(e) => setSubCategory(e.target.value)}
+          disabled={!category}
+        >
+          {categoryMap[category]?.map((sub) => (
+            <MenuItem key={sub} value={sub}>
+              {sub.charAt(0).toUpperCase() + sub.slice(1)}
+            </MenuItem>
+          ))}
+        </TextField>
+
         <Typography variant="h6" sx={{ mt: 2 }}>
           Product Details
         </Typography>
@@ -242,10 +306,13 @@ export const AddBlog = () => {
         </Button>
 
         <Box sx={{ mt: 3 }}>
-          <Button variant="contained" color="primary" type="submit"
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
             disabled={loading}
             startIcon={loading && <CircularProgress size={20} />}
-            >
+          >
             {loading ? "Adding..." : "Add Blog"}
           </Button>
         </Box>

@@ -12,6 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useProductAutoFetch } from "../hooks/useProductAutoFetch";
 
 export const EditProductDialog = ({
   open,
@@ -24,10 +25,12 @@ export const EditProductDialog = ({
     setProduct((prev) => {
       if (!prev) return prev;
       const updatedDetails = [...prev.details];
+
       updatedDetails[index][field] = value;
       return { ...prev, details: updatedDetails };
     });
   };
+  const { fetchProductDetails, fetching } = useProductAutoFetch();
 
   const handleAddDetail = () => {
     setProduct((prev) =>
@@ -54,6 +57,24 @@ export const EditProductDialog = ({
         product: { ...prev.product, [field]: value },
       };
     });
+  };
+
+  const handleEditAutoFetch = async (url) => {
+    const data = await fetchProductDetails(url);
+
+    if (!data) return;
+
+    setProduct((prev) =>
+      prev
+        ? {
+            ...prev,
+            product: {
+              ...prev.product,
+              ...data,
+            },
+          }
+        : prev,
+    );
   };
 
   return (
@@ -103,12 +124,23 @@ export const EditProductDialog = ({
         />
         <TextField
           margin="dense"
+          label="Affiliate URL"
+          fullWidth
+          value={product?.product?.affiliateUrl || ""}
+          onChange={(e) =>
+            handleProductFieldChange("affiliateUrl", e.target.value)
+          }
+        />
+        <TextField
+          margin="dense"
           label="Product URL"
           fullWidth
           value={product?.product?.productUrl || ""}
           onChange={(e) =>
             handleProductFieldChange("productUrl", e.target.value)
           }
+          onBlur={(e) => handleEditAutoFetch(e.target.value)}
+          helperText={fetching ? "Fetching product details..." : ""}
         />
         <TextField
           margin="dense"
@@ -119,11 +151,27 @@ export const EditProductDialog = ({
         />
         <TextField
           margin="dense"
-          label="Auto Price (Read Only)"
+          label="Current Price"
           fullWidth
-          value={product?.product?.currentPrice || "Fetching automatically"}
-          InputProps={{ readOnly: true }}
+          value={product?.product?.currentPrice}
+          onChange={(e) => handleProductFieldChange("currentPrice", e.target.value)}
+
         />
+ {/* ✅ Category Dropdown */}
+        <TextField
+          select
+          label="Category"
+          fullWidth
+          margin="normal"
+          value={product?.category|| ""}
+          onChange={(e) =>    setProduct((prev) =>
+      prev ? { ...prev, category: e.target.value } : prev
+    )}
+        >
+          <MenuItem value="fashion">Fashion</MenuItem>
+          <MenuItem value="beauty">Beauty</MenuItem>
+          <MenuItem value="general">General</MenuItem>
+        </TextField>
 
         <Divider sx={{ my: 2 }} />
         <Typography variant="subtitle1">Details</Typography>

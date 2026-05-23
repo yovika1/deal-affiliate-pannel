@@ -19,6 +19,7 @@ export const ManageBlogs = () => {
   const [products, setProducts] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  // const [fetching, setFetching] = useState(false);
 
   const fetchProducts = async () => {
     const res = await axios.get(`${API_BASE}/getBlogs`);
