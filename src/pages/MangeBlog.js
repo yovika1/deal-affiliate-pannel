@@ -7,7 +7,7 @@ import {
   ListItem,
   ListItemText,
   IconButton,
-  ListItemAvatar,
+  // ListItemAvatar,
   Avatar,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -41,13 +41,45 @@ export const ManageBlogs = () => {
   };
 
   const handleSave = async () => {
-    if (selectedProduct) {
-      await axios.put(
-        `${API_BASE}/update/${selectedProduct._id}`,
-        selectedProduct
+    if (!selectedProduct) return;
+
+    try {
+      const formData = new FormData();
+
+      formData.append("productTitle", selectedProduct.productTitle);
+      formData.append("category", selectedProduct.category);
+      formData.append("details", JSON.stringify(selectedProduct.details));
+
+      formData.append(
+        "product",
+        JSON.stringify({
+          productName: selectedProduct.product.productName,
+          affiliateUrl: selectedProduct.product.affiliateUrl,
+          productUrl: selectedProduct.product.productUrl,
+          rating:selectedProduct.product.rating,
+          reviewsCount: selectedProduct.product.reviewsCount,
+          discountPercent: selectedProduct.product.discountPercent,
+          currentPrice: selectedProduct.product.currentPrice,
+          originalPrice: selectedProduct.product.originalPrice,
+          imageUrl: selectedProduct.product.imageUrl,
+        }),
       );
+
+      if (selectedProduct.imageFile) {
+        formData.append("image", selectedProduct.imageFile);
+      }
+
+      await axios.put(`${API_BASE}/update/${selectedProduct._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       setOpen(false);
       fetchProducts();
+    } catch (err) {
+      console.log(err);
+      alert("Update failed");
     }
   };
 
@@ -72,16 +104,23 @@ export const ManageBlogs = () => {
               </>
             }
           >
-            <ListItemAvatar>
-              <Avatar
-                src={blog.product?.imageUrl}
-                alt={blog.product?.productName}
-                variant="square"
-                sx={{ width: 60, height: 60, mr: 2 }}
-              />
-            </ListItemAvatar>
+            <Avatar
+              src={
+                blog.product?.imageUrl?.startsWith("http")
+                  ? blog.product.imageUrl
+                  : blog.product?.imageUrl
+                    ? `${API_BASE}${blog.product.imageUrl}`
+                    : ""
+              }
+              alt={blog.product?.productName}
+              variant="square"
+              sx={{ width: 60, height: 60, mr: 2 }}
+            />
+
             <ListItemText
-              primary={blog.product?.productName || blog.productTitle || "Unnamed"}
+              primary={
+                blog.product?.productName || blog.productTitle || "Unnamed"
+              }
               secondary={
                 <>
                   {blog.product?.currentPrice && (

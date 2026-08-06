@@ -6,73 +6,83 @@ import {
   Button,
   Box,
   Typography,
-  IconButton,
   Snackbar,
   MenuItem,
   CircularProgress,
 } from "@mui/material";
-import { Delete } from "@mui/icons-material";
 import API_BASE from "../config";
-import { useProductAutoFetch } from "../hooks/useProductAutoFetch";
 
 export const AddBlog = () => {
   const [affiliateUrl, setaffiliateUrl] = useState("");
   const [productUrl, setproductUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState(null);
   const [productName, setProductName] = useState("");
   const [productTitle, setProductTitle] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState("general");
   const [subCategory, setSubCategory] = useState("");
   const [currentPrice, setCurrentPrice] = useState("");
   const [originalPrice, setOriginalPrice] = useState("");
   const [badge, setBadge] = useState("Trending");
   const [rating, setRating] = useState("");
+  const [gender, setGender] = useState("");
   const [reviewsCount, setReviewsCount] = useState("");
   const [discountPercent, setDiscountPercent] = useState("");
-  const [details, setDetails] = useState([{ name: "", value: "" }]);
   const [snackOpen, setSnackOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { fetchProductDetails, fetching } = useProductAutoFetch();
+  // const { fetchProductDetails, fetching } = useProductAutoFetch();
 
-  const handleAddDetail = () => {
-    setDetails([...details, { name: "", value: "" }]);
-  };
 
-  const handleRemoveDetail = (index) => {
-    const newDetails = details.filter((_, i) => i !== index);
-    setDetails(newDetails);
-  };
+  // const handleAutoFetch = async () => {
+  //   const data = await fetchProductDetails(productUrl);
 
-  const handleDetailChange = (index, field, value) => {
-    const newDetails = [...details];
-    newDetails[index][field] = value;
-    setDetails(newDetails);
-  };
+  //   if (!data) return;
 
-  const handleAutoFetch = async () => {
-    const data = await fetchProductDetails(productUrl);
+  //   setProductName(data.productName);
+  //   setImageFile (data.imageFile );
+  //   setCurrentPrice(data.currentPrice);
+  //   setOriginalPrice(data.originalPrice);
+  //   setRating(data.rating);
+  //   setReviewsCount(data.reviewsCount);
+  //   setDiscountPercent(data.discountPercent);
+  // };
 
-    if (!data) return;
+ const categoryMap = {
+  fashion: [
+    "shirts",
+    "tshirts",
+    "jeans",
+    "trousers",
+    "cargo",
+    "kurta",
+    "Track Suit",
+    "dresses",
+    "tops",
+  ],
 
-    setProductName(data.productName);
-    setImageUrl(data.imageUrl);
-    setCurrentPrice(data.currentPrice);
-    setOriginalPrice(data.originalPrice);
-    setRating(data.rating);
-    setReviewsCount(data.reviewsCount);
-    setDiscountPercent(data.discountPercent);
-  };
+  beauty: [
+    "makeup",
+    "lipstick",
+    "kajal",
+    "eyeliner",
+    "foundation",
+    "sunscreen",
+    "moisturizer",
+    "perfume",
+    "facewash",
+  ],
 
-  const categoryMap = {
-    fashion: ["dresses", "jeans", "mens-collection"],
-    beauty: ["makeup", "skincare"],
-    general: ["trending","bestSeller","newArrival"],
-  };
+  general: [
+    "trending",
+    "bestSeller",
+    "newArrival",
+  ],
+};
 
   const handleCategoryChange = (e) => {
     const selectedCategory = e.target.value;
     setCategory(selectedCategory);
-    setSubCategory(""); 
+    setSubCategory("");
   };
   useEffect(() => {
     if (currentPrice && originalPrice) {
@@ -86,43 +96,47 @@ export const AddBlog = () => {
     setLoading(true);
 
     try {
-      const payload = {
-        productTitle,
-        category,
-        subCategory,
-        affiliateUrl,
-        productUrl,
-        badge,
-        details,
+      const formData = new FormData();
 
-        product: {
-          affiliateUrl,
-          productUrl,
-          productName,
-          imageUrl,
-          currentPrice: Number(currentPrice),
-          originalPrice: Number(originalPrice),
-          rating: Number(rating),
-          reviewsCount: Number(reviewsCount),
-          discountPercent: Number(discountPercent),
-        },
-      };
-      await axios.post(`${API_BASE}/create`, payload);
+      formData.append("productTitle", productTitle);
+      formData.append("category", category);
+      formData.append("subCategory", subCategory);
+      formData.append("affiliateUrl", affiliateUrl);
+      formData.append("productUrl", productUrl);
+      formData.append("badge", badge);
+      formData.append("productName", productName);
+      formData.append("currentPrice", currentPrice);
+      formData.append("originalPrice", originalPrice);
+      formData.append("rating", rating);
+      formData.append("reviewsCount", reviewsCount);
+      formData.append("discountPercent", discountPercent);
+      if (gender) {
+        formData.append("gender", gender);
+      }
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+      if (imageUrl) {
+        formData.append("imageUrl", imageUrl);
+      }
+
+      await axios.post(`${API_BASE}/create`, formData);
 
       setaffiliateUrl("");
       setproductUrl("");
+      setImageFile(null);
       setImageUrl("");
       setProductName("");
       setProductTitle("");
       setCurrentPrice("");
       setOriginalPrice("");
       setBadge("Trending");
+      setGender("");
       setRating("");
       setReviewsCount("");
       setDiscountPercent("");
       setCategory("general");
       setSubCategory("");
-      setDetails([{ name: "", value: "" }]);
       setSnackOpen(true);
     } catch (err) {
       alert("Failed to add product");
@@ -169,13 +183,26 @@ export const AddBlog = () => {
           onChange={(e) => setaffiliateUrl(e.target.value)}
         />
 
+        <Button variant="outlined" component="label">
+          Upload Product Image
+          <input
+            hidden
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+          />
+        </Button>
+
+        {imageFile && <Typography mt={1}>{imageFile.name}</Typography>}
+
         <TextField
-          label="Product Image URL"
+          label="External Image URL"
           fullWidth
           margin="normal"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
+        
 
         <TextField
           label="Product Name"
@@ -192,6 +219,18 @@ export const AddBlog = () => {
           value={rating}
           onChange={(e) => setRating(e.target.value)}
         />
+        <TextField
+        select
+          label="Gender"
+          fullWidth
+          margin="normal"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+        >
+          <MenuItem value="">Auto Detect</MenuItem>
+          <MenuItem value="men">Men</MenuItem>
+          <MenuItem value="women">Women</MenuItem>
+        </TextField>
 
         <TextField
           label="Reviews Count"
@@ -268,43 +307,7 @@ export const AddBlog = () => {
           ))}
         </TextField>
 
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Product Details
-        </Typography>
-
-        {details.map((detail, index) => (
-          <Box key={index} sx={{ display: "flex", gap: 2, my: 1 }}>
-            <TextField
-              label="Details Name"
-              value={detail.name}
-              onChange={(e) =>
-                handleDetailChange(index, "name", e.target.value)
-              }
-              fullWidth
-            />
-            <TextField
-              label="Details Value"
-              value={detail.value}
-              onChange={(e) =>
-                handleDetailChange(index, "value", e.target.value)
-              }
-              fullWidth
-            />
-            {index > 0 && (
-              <IconButton
-                color="error"
-                onClick={() => handleRemoveDetail(index)}
-              >
-                <Delete />
-              </IconButton>
-            )}
-          </Box>
-        ))}
-
-        <Button onClick={handleAddDetail} sx={{ mt: 1 }}>
-          + Add More
-        </Button>
-
+       
         <Box sx={{ mt: 3 }}>
           <Button
             variant="contained"
